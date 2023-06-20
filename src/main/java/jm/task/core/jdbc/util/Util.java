@@ -9,15 +9,15 @@ public class Util {  // реализуйте настройку соеденен
 
     public static Connection getConnection() throws SQLException {
 
-        String dbURL = "jdbc:mysql://localhost:3306/";
-        String dbUsername = "root";
-        String password = "synchro4";
+        final String  dbURL = "jdbc:mysql://localhost:3306/world";
+        final String dbUsername = "root";
+        final String password = "synchro4";
 
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(dbURL, dbUsername, password);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
         return connection;
     }

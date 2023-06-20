@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,41 +9,40 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    private String host = "jdbc:mysql://localhost:3306/";
-    private String mysqlUrl = "jdbc:mysql://localhost:3306/xxx";
-
     public UserDaoJDBCImpl() {
     }
 
-    public void createUsersTable() {
+    @Override
+    public void createUsersTable() throws SQLException {
 
-        try (Connection con = DriverManager.getConnection(host, "root", "synchro4");
+        try (Connection con = Util.getConnection();
              Statement stmt = con.createStatement()) {
 
-            stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS xxx");
-            stmt.executeUpdate("USE xxx");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS usersTable (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), lastName VARCHAR(100), age BIGINT)");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS usersTable (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), last_name VARCHAR(100), age TINYINT)");
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
-    public void dropUsersTable() {
+    @Override
+    public void dropUsersTable() throws SQLException {
 
-        try (Connection con = DriverManager.getConnection(mysqlUrl, "root", "synchro4");
+        try (Connection con = Util.getConnection();
              Statement stmt = con.createStatement()) {
 
             stmt.executeUpdate("DROP TABLE IF EXISTS usersTable");
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    @Override
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
 
-        try (Connection con = DriverManager.getConnection(mysqlUrl, "root", "synchro4");
-             PreparedStatement stmt = con.prepareStatement("INSERT INTO usersTable (name, lastName, age) VALUES (?, ?, ?);")) {
+        try (Connection con = Util.getConnection();
+             PreparedStatement stmt = con.prepareStatement("INSERT INTO usersTable (name, last_name, age) VALUES (?, ?, ?);")) {
 
             stmt.setString(1, name);
             stmt.setString(2, lastName);
@@ -53,51 +53,54 @@ public class UserDaoJDBCImpl implements UserDao {
             System.out.println();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
-    public void removeUserById(long id) {
+    @Override
+    public void removeUserById(long id) throws SQLException {
 
-        try (Connection con = DriverManager.getConnection(mysqlUrl, "root", "synchro4");
+        try (Connection con = Util.getConnection();
              PreparedStatement stmt = con.prepareStatement("DELETE FROM usersTable WHERE id = ?")) {
 
             stmt.setString(1, Long.toString(id));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
-    public List<User> getAllUsers() {
+    @Override
+    public List<User> getAllUsers() throws SQLException {
 
         ArrayList<User> users = new ArrayList<>();
         ;
 
-        try (Connection con = DriverManager.getConnection(mysqlUrl, "root", "synchro4");
+        try (Connection con = Util.getConnection();
              PreparedStatement stmt = con.prepareStatement("SELECT * FROM usersTable");
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                users.add(new User(rs.getString("name"), rs.getString("lastName"), rs.getByte("age")));
+                users.add(new User(rs.getString("name"), rs.getString("last_name"), rs.getByte("age")));
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
         return users;
     }
 
-    public void cleanUsersTable() {
+    @Override
+    public void cleanUsersTable() throws SQLException {
 
-        try (Connection con = DriverManager.getConnection(mysqlUrl, "root", "synchro4");
+        try (Connection con = Util.getConnection();
              PreparedStatement stmt = con.prepareStatement("TRUNCATE TABLE usersTable")) {
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 }
