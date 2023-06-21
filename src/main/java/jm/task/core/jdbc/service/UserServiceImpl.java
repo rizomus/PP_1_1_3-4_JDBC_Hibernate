@@ -10,6 +10,9 @@ public class UserServiceImpl implements UserService {
 
     private UserDaoJDBCImpl dao = new UserDaoJDBCImpl();
 
+    public UserServiceImpl() {
+    }
+
     @Override
     public void createUsersTable() throws SQLException {
         dao.createUsersTable();
